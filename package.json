@@ -1,0 +1,36 @@
+{
+  "name": "pdf-qa-app",
+  "version": "1.0.0",
+  "description": "PDF Document Q&A Application with React frontend",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "concurrently \"npm start\" \"cd backend && python app.py\""
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "axios": "^1.6.0",
+    "react-pdf": "^7.5.1",
+    "pdfjs-dist": "^3.11.174"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

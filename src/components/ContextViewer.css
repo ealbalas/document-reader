@@ -1,0 +1,219 @@
+.context-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.context-modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  height: 85%;
+  max-height: 900px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.context-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.context-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #e9ecef;
+  color: #333;
+}
+
+.context-info {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f8f9fa;
+}
+
+.context-stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.context-stats span {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.context-description {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.context-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.context-page {
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f8f9fa;
+}
+
+.context-page:last-child {
+  margin-bottom: 0;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #e9ecef;
+  border-bottom: 1px solid #ddd;
+  border-radius: 6px 6px 0 0;
+}
+
+.page-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.page-length {
+  color: #666;
+  font-size: 0.9rem;
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.page-content {
+  padding: 20px;
+  background: white;
+  border-radius: 0 0 6px 6px;
+}
+
+.page-content pre {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #333;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+.context-content::-webkit-scrollbar,
+.page-content pre::-webkit-scrollbar {
+  width: 8px;
+}
+
+.context-content::-webkit-scrollbar-track,
+.page-content pre::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.context-content::-webkit-scrollbar-thumb,
+.page-content pre::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.context-content::-webkit-scrollbar-thumb:hover,
+.page-content pre::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .context-modal {
+    width: 95%;
+    height: 90%;
+  }
+  
+  .context-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .page-content pre {
+    font-size: 0.8rem;
+  }
+}
+
+/* Highlight important sections */
+.context-page {
+  transition: box-shadow 0.2s;
+}
+
+.context-page:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Make page markers more visible in the content */
+.page-content pre {
+  position: relative;
+}
+
+/* Add visual emphasis to the context */
+.context-info {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.page-header {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}

@@ -1,0 +1,352 @@
+/**
+ * Professional PDF Viewer Component Styles
+ */
+
+.pdf-viewer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(25px);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+.pdf-viewer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed, #6d28d9);
+  border-radius: 24px 24px 0 0;
+}
+
+.pdf-viewer-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(25px);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  text-align: center;
+  position: relative;
+}
+
+.pdf-viewer-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed, #6d28d9);
+  border-radius: 24px 24px 0 0;
+}
+
+.placeholder-content {
+  padding: 80px 48px;
+  color: #64748b;
+}
+
+.placeholder-content h3 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.placeholder-content p {
+  font-size: 1.125rem;
+  font-weight: 500;
+  opacity: 0.8;
+  color: #475569;
+}
+
+.pdf-container {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  background: #f8fafc;
+  position: relative;
+}
+
+.pdf-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  position: relative;
+}
+
+/* PDF Document Styles */
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page {
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.react-pdf__Page:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.react-pdf__Page__canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Loading States */
+.pdf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  color: #64748b;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.pdf-loading p {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Error States */
+.pdf-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  color: #dc2626;
+  text-align: center;
+}
+
+.pdf-error h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #dc2626;
+}
+
+.pdf-error p {
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pdf-container {
+    padding: 16px;
+  }
+  
+  .placeholder-content {
+    padding: 40px 24px;
+  }
+  
+  .placeholder-content h3 {
+    font-size: 1.25rem;
+  }
+  
+  .placeholder-content p {
+    font-size: 0.875rem;
+  }
+  
+  .pdf-loading,
+  .pdf-error {
+    padding: 40px 24px;
+  }
+  
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pdf-container {
+    padding: 12px;
+  }
+  
+  .placeholder-content {
+    padding: 32px 20px;
+  }
+  
+  .placeholder-content h3 {
+    font-size: 1.125rem;
+  }
+  
+  .pdf-loading,
+  .pdf-error {
+    padding: 32px 20px;
+  }
+  
+  .react-pdf__Page {
+    margin-bottom: 16px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .pdf-viewer,
+  .pdf-viewer-placeholder {
+    background: rgba(15, 23, 42, 0.98);
+    border-color: rgba(51, 65, 85, 0.6);
+  }
+  
+  .pdf-container {
+    background: #0f172a;
+  }
+  
+  .placeholder-content h3 {
+    color: #e2e8f0;
+  }
+  
+  .placeholder-content p {
+    color: #94a3b8;
+  }
+  
+  .pdf-loading p {
+    color: #94a3b8;
+  }
+  
+  .react-pdf__Page {
+    border-color: rgba(51, 65, 85, 0.6);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .react-pdf__Page:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+  
+  .loading-spinner {
+    border-color: rgba(51, 65, 85, 0.8);
+    border-top-color: #667eea;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .pdf-viewer,
+  .pdf-viewer-placeholder {
+    border-width: 2px;
+  }
+  
+  .react-pdf__Page {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .react-pdf__Page {
+    transition: none;
+  }
+  
+  .react-pdf__Page:hover {
+    transform: none;
+  }
+  
+  .loading-spinner {
+    animation: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .pdf-viewer {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .pdf-container {
+    background: white;
+    padding: 0;
+  }
+  
+  .react-pdf__Page {
+    box-shadow: none;
+    border: 1px solid #000;
+    margin-bottom: 10px;
+    break-inside: avoid;
+  }
+}
+
+/* Focus styles for accessibility */
+.pdf-viewer:focus-within {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar for PDF container */
+.pdf-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.pdf-container::-webkit-scrollbar-track {
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 6px;
+}
+
+.pdf-container::-webkit-scrollbar-thumb {
+  background: rgba(203, 213, 225, 0.8);
+  border-radius: 6px;
+  border: 2px solid rgba(248, 250, 252, 0.8);
+}
+
+.pdf-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.8);
+}
+
+/* Smooth scrolling */
+.pdf-container {
+  scroll-behavior: smooth;
+}
+
+/* Selection styles */
+.pdf-container ::selection {
+  background: rgba(102, 126, 234, 0.2);
+}

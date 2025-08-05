@@ -1,0 +1,263 @@
+.pdf-viewer {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  flex-wrap: wrap;
+}
+
+.page-navigation, .citation-navigation, .zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.citation-navigation {
+  background-color: #e3f2fd;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #bbdefb;
+}
+
+.citation-btn {
+  background-color: #2196f3 !important;
+  color: white !important;
+  font-size: 0.85rem !important;
+  padding: 0.4rem 0.8rem !important;
+}
+
+.citation-btn:hover:not(:disabled) {
+  background-color: #1976d2 !important;
+}
+
+.citation-info {
+  font-size: 0.85rem;
+  color: #1565c0;
+  font-weight: 500;
+  text-align: center;
+  min-width: 200px;
+}
+
+.citation-details {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: normal;
+  margin-top: 2px;
+}
+
+.pdf-controls button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.pdf-controls button:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.pdf-controls button:disabled {
+  background-color: #adb5bd;
+}
+
+.page-info, .zoom-info {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.pdf-container {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  background-color: #f8f9fa;
+  min-height: 400px;
+  overflow: auto;
+}
+
+.pdf-page-wrapper {
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: white;
+}
+
+.react-pdf__Page {
+  position: relative;
+}
+
+.react-pdf__Page__canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.highlight-overlay {
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.3);
+  border: 2px solid red;
+  pointer-events: none;
+  z-index: 10;
+  animation: highlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes highlight-pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.pdf-highlight {
+  transition: all 0.3s ease;
+  border-radius: 2px;
+  animation: highlight-appear 0.5s ease-out;
+}
+
+.pdf-highlight:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+/* Enhanced highlight styles for different types */
+.highlight-exact {
+  background-color: rgba(255, 215, 0, 0.4) !important;
+  border: 2px solid rgba(255, 140, 0, 0.8) !important;
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.6) !important;
+}
+
+.highlight-word {
+  background-color: rgba(0, 255, 127, 0.3) !important;
+  border: 2px solid rgba(0, 200, 100, 0.7) !important;
+  box-shadow: 0 0 6px rgba(0, 200, 100, 0.5) !important;
+}
+
+.highlight-test_debug {
+  background-color: rgba(255, 0, 255, 0.2) !important;
+  border: 1px dashed rgba(255, 0, 255, 0.6) !important;
+}
+
+.highlight-default {
+  background-color: rgba(135, 206, 250, 0.3) !important;
+  border: 2px solid rgba(70, 130, 180, 0.7) !important;
+  box-shadow: 0 0 4px rgba(70, 130, 180, 0.5) !important;
+}
+
+/* Highlight legend styles */
+.highlight-legend {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 0.8rem;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.legend-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.legend-item::before {
+  content: '';
+  width: 12px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.legend-item.highlight-exact::before {
+  background-color: rgba(255, 215, 0, 0.6);
+  border: 1px solid rgba(255, 140, 0, 0.8);
+}
+
+.legend-item.highlight-word::before {
+  background-color: rgba(0, 255, 127, 0.5);
+  border: 1px solid rgba(0, 200, 100, 0.7);
+}
+
+.legend-item.highlight-test_debug::before {
+  background-color: rgba(255, 0, 255, 0.3);
+  border: 1px dashed rgba(255, 0, 255, 0.6);
+}
+
+.legend-item.highlight-default::before {
+  background-color: rgba(135, 206, 250, 0.5);
+  border: 1px solid rgba(70, 130, 180, 0.7);
+}
+
+@keyframes highlight-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .pdf-controls {
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .pdf-controls button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .page-info, .zoom-info {
+    font-size: 0.8rem;
+  }
+  
+  .pdf-container {
+    padding: 0.5rem;
+  }
+}
