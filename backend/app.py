@@ -25,8 +25,8 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Configuration
-app.config['MAX_CONTENT_LENGTH'] = 150 * 1024 * 1024  # 150MB max file size
+# Configuration - Reduced for Render free tier
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size for free tier
 UPLOAD_FOLDER = tempfile.mkdtemp()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -657,39 +657,87 @@ def upload_file():
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
     
+    # Check file size before processing
+    file.seek(0, 2)  # Seek to end
+    file_size = file.tell()
+    file.seek(0)  # Reset to beginning
+    
+    if file_size > app.config['MAX_CONTENT_LENGTH']:
+        return jsonify({'error': f'File too large. Maximum size is {app.config["MAX_CONTENT_LENGTH"] // (1024*1024)}MB'}), 413
+    
     if file and file.filename.lower().endswith('.pdf'):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
         
         try:
-            # Extract text and structure from PDF
-            current_pdf_pages = extract_text_from_pdf(filepath)
-            current_pdf_path = filepath
-            current_pdf_text = " ".join([page["text"] for page in current_pdf_pages])
+            # Save file
+            file.save(filepath)
+            print(f"Processing PDF: {filename} ({file_size / (1024*1024):.1f}MB)")
+            
+            # Extract text and structure from PDF with error handling
+            try:
+                current_pdf_pages = extract_text_from_pdf(filepath)
+                if not current_pdf_pages:
+                    raise Exception("No pages could be extracted from PDF")
+                    
+                current_pdf_path = filepath
+                current_pdf_text = " ".join([page["text"] for page in current_pdf_pages])
+                
+                print(f"Extracted text from {len(current_pdf_pages)} pages")
+                
+            except Exception as pdf_error:
+                # Clean up file on PDF processing error
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                raise Exception(f"PDF processing failed: {str(pdf_error)}")
             
             # Detect document domain for optimal embedding model selection
-            text_sample = current_pdf_text[:2000]
+            text_sample = current_pdf_text[:2000] if current_pdf_text else ""
             document_domain = detect_document_domain(text_sample)
             print(f"Detected document domain: {document_domain}")
             
-            # Initialize embedding system with domain-specific model
-            if not embedding_model:
-                initialize_embedding_system(document_domain)
-            
-            # Create embeddings for the document
-            embeddings_created = create_embeddings_for_document(current_pdf_pages)
+            # Initialize embedding system with domain-specific model (optional, don't fail if it doesn't work)
+            embeddings_created = False
+            try:
+                if not embedding_model:
+                    initialize_embedding_system(document_domain)
+                
+                # Create embeddings for the document
+                if embedding_model:
+                    embeddings_created = create_embeddings_for_document(current_pdf_pages)
+                    print(f"Embeddings created: {embeddings_created}")
+            except Exception as embedding_error:
+                print(f"Warning: Embedding creation failed: {str(embedding_error)}")
+                # Don't fail the upload if embeddings fail
             
             return jsonify({
                 'message': 'File uploaded successfully',
                 'pages': len(current_pdf_pages),
                 'embeddings_created': embeddings_created,
-                'document_domain': document_domain
+                'document_domain': document_domain,
+                'file_size_mb': round(file_size / (1024*1024), 1)
             })
+            
         except Exception as e:
-            return jsonify({'error': f'Error processing PDF: {str(e)}'}), 500
+            # Clean up file on any error
+            if os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                except:
+                    pass
+            
+            error_msg = str(e)
+            print(f"Upload error: {error_msg}")
+            
+            # Return more specific error messages
+            if "memory" in error_msg.lower() or "out of memory" in error_msg.lower():
+                return jsonify({'error': 'PDF too complex for processing. Try a smaller or simpler PDF.'}), 507
+            elif "timeout" in error_msg.lower():
+                return jsonify({'error': 'PDF processing timed out. Try a smaller PDF.'}), 408
+            else:
+                return jsonify({'error': f'Error processing PDF: {error_msg}'}), 500
     
-    return jsonify({'error': 'Invalid file type'}), 400
+    return jsonify({'error': 'Invalid file type. Please upload a PDF file.'}), 400
 
 @app.route('/ask', methods=['POST'])
 def ask_question():

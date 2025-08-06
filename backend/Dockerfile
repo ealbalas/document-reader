@@ -38,5 +38,5 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 ENV PORT=5002
 
-# Run the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "2", "--timeout", "120", "app:app"]
+# Run the application with gunicorn optimized for Render free tier
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "1", "--timeout", "300", "--worker-class", "sync", "--max-requests", "100", "--max-requests-jitter", "10", "--preload", "app:app"]
