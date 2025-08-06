@@ -8,6 +8,7 @@ yarn-error.log*
 build/
 dist/
 docs/
+document-reader.pem
 
 # Environment variables
 .env

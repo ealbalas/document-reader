@@ -4,8 +4,8 @@
  */
 import axios from 'axios';
 
-// Use Render backend for production, fallback to local for development
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://document-reader-36gp.onrender.com';
+// Use Fly.io backend for production, fallback to local for development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://pdf-reader-backend.fly.dev';
 
 // Debug logging
 console.log('Using API URL:', API_BASE_URL);

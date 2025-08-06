@@ -36,9 +36,46 @@ The PDF Reader backend has been successfully containerized and is running locall
 - Updated `chromadb` to version 0.4.24
 - All dependency conflicts resolved
 
-## Deployment Options
+## ✅ Fly.io Deployment Complete
 
-### Option 1: Render (Recommended)
+The PDF Reader backend has been successfully deployed to Fly.io and is running in production.
+
+### Current Production Status
+- **App Name**: `pdf-reader-backend`
+- **URL**: https://pdf-reader-backend.fly.dev
+- **Status**: ✅ Running (2 machines in San Jose region)
+- **Health Check**: ✅ Passing (`/health` endpoint)
+- **API Endpoints**: ✅ All functional
+- **Environment**: Production with secure secrets
+
+### Verified Production Endpoints
+1. `GET /health` - ✅ Returns `{"status":"healthy"}`
+2. `GET /api/models/config` - ✅ Returns model configuration with OpenAI integration
+3. `POST /upload` - Available for PDF uploads
+4. `POST /ask` - Available for question answering
+5. `GET /extracted-text` - Available for text extraction results
+
+### Production Configuration
+- **OpenAI API**: ✅ Configured with GPT-4o
+- **Gemini API**: ✅ Configured with API key
+- **LLM Provider**: OpenAI (configurable)
+- **Embedding Provider**: sentence-transformers (default)
+- **Flask Environment**: Production
+- **Auto-scaling**: Enabled (machines start/stop automatically)
+
+### Deployment Options
+
+### Option 1: Fly.io (✅ DEPLOYED)
+
+Successfully deployed using Fly.io with the following steps:
+
+1. **Install Fly.io CLI**: ✅ Complete
+2. **Login to Fly.io**: ✅ Complete
+3. **Create App**: ✅ Complete (`pdf-reader-backend`)
+4. **Set Secrets**: ✅ Complete (OpenAI & Gemini API keys)
+5. **Deploy**: ✅ Complete and running
+
+### Option 2: Render (Alternative)
 
 Render provides easy Docker deployment with GitHub integration:
 
@@ -48,26 +85,6 @@ Render provides easy Docker deployment with GitHub integration:
 4. **Deploy**: Render will automatically build and deploy your Docker container
 
 See `RENDER_DEPLOYMENT.md` for detailed instructions.
-
-### Option 2: Fly.io
-
-To deploy to Fly.io, you'll need to:
-
-1. **Install Fly.io CLI**:
-   ```bash
-   curl -L https://fly.io/install.sh | sh
-   ```
-
-2. **Login to Fly.io**:
-   ```bash
-   flyctl auth login
-   ```
-
-3. **Deploy the application**:
-   ```bash
-   cd backend
-   flyctl deploy
-   ```
 
 ### Configuration Files
 - **Render**: `render.yaml` - Infrastructure as Code configuration

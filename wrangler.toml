@@ -5,4 +5,4 @@ compatibility_date = "2024-01-01"
 pages_build_output_dir = "build"
 
 [env.production.vars]
-REACT_APP_API_URL = "https://document-reader-36gp.onrender.com"
+REACT_APP_API_URL = "https://pdf-reader-backend.fly.dev"
