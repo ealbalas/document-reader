@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { askQuestion } from '../services/api';
 
-export const useQuestionAnswering = () => {
+export const useQuestionAnswering = (fileId) => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -82,7 +82,7 @@ export const useQuestionAnswering = () => {
     setError(null);
 
     try {
-      const response = await askQuestion(question.trim());
+      const response = await askQuestion(question.trim(), fileId);
 
       setAnswer(response.answer);
       setLastContext(response.context);

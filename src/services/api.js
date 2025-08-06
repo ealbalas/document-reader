@@ -4,7 +4,11 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002';
+// Hardcode the worker URL to ensure it works
+const API_BASE_URL = 'https://pdf-reader-backend.emadalbalas.workers.dev';
+
+// Debug logging
+console.log('Using API URL:', API_BASE_URL);
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -71,16 +75,16 @@ export const uploadPDF = async (file, onUploadProgress = null) => {
 /**
  * Question Asking Service
  */
-export const askQuestion = async (question) => {
-  const response = await apiClient.post('/ask', { question });
+export const askQuestion = async (question, fileId) => {
+  const response = await apiClient.post('/ask', { question, fileId });
   return response.data;
 };
 
 /**
  * Get Extracted Text Service
  */
-export const getExtractedText = async () => {
-  const response = await apiClient.get('/extracted-text');
+export const getExtractedText = async (fileId) => {
+  const response = await apiClient.get(`/extracted-text/${fileId}`);
   return response.data;
 };
 

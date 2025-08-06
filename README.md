@@ -91,7 +91,9 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
 ## Running the Application
 
-### Method 1: Start Both Servers Simultaneously (Recommended)
+### Local Development
+
+#### Method 1: Start Both Servers Simultaneously (Recommended)
 
 From the root directory:
 
@@ -101,9 +103,9 @@ npm run dev
 
 This command will start both the frontend and backend servers concurrently.
 
-### Method 2: Start Servers Separately
+#### Method 2: Start Servers Separately
 
-#### Start the Backend Server
+**Start the Backend Server:**
 
 From the backend directory:
 
@@ -114,7 +116,7 @@ python app.py
 
 The backend server will start on `http://localhost:5002`
 
-#### Start the Frontend Development Server
+**Start the Frontend Development Server:**
 
 From the root directory (in a new terminal):
 
@@ -123,6 +125,61 @@ npm start
 ```
 
 The React application will start on `http://localhost:3000` and automatically open in your browser.
+
+### 🚀 Deploy to Cloudflare (Recommended for Production)
+
+For production deployment, we recommend using Cloudflare's global network for optimal performance and scalability.
+
+#### Quick Deployment
+
+```bash
+# Install Wrangler CLI
+npm install -g wrangler
+
+# Login to Cloudflare
+wrangler login
+
+# Run automated deployment
+./deploy.sh
+```
+
+#### Manual Deployment Steps
+
+1. **Set up Cloudflare resources:**
+   ```bash
+   wrangler r2 bucket create pdf-reader-files
+   wrangler kv:namespace create "PDF_STORAGE"
+   ```
+
+2. **Deploy the backend:**
+   ```bash
+   npm run build:worker
+   npm run deploy:worker
+   ```
+
+3. **Deploy the frontend:**
+   ```bash
+   npm run build
+   wrangler pages deploy build --project-name pdf-reader-frontend
+   ```
+
+4. **Configure API keys:**
+   ```bash
+   wrangler secret put OPENAI_API_KEY
+   wrangler secret put GEMINI_API_KEY
+   ```
+
+📖 **For detailed deployment instructions, see:**
+- [Quick Start Guide](CLOUDFLARE_QUICKSTART.md) - Get deployed in minutes
+- [Detailed Deployment Guide](DEPLOYMENT.md) - Complete configuration options
+
+#### Deployment Benefits
+
+- **Global CDN**: Fast loading worldwide
+- **Serverless Backend**: Auto-scaling with zero maintenance
+- **Free Tier**: Generous limits for personal/small business use
+- **HTTPS**: Automatic SSL certificates
+- **High Availability**: 99.9%+ uptime
 
 ## Usage Guide
 

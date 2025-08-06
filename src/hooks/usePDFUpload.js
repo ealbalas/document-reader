@@ -3,11 +3,12 @@
  * Handles file upload state and operations
  */
 import { useState, useRef } from 'react';
-import axios from 'axios';
+import { uploadPDF } from '../services/api';
 
 export const usePDFUpload = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [fileId, setFileId] = useState(null);
   const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success, error
   const [uploadError, setUploadError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -44,34 +45,16 @@ export const usePDFUpload = () => {
       setPdfFile(file);
       setPdfUrl(URL.createObjectURL(file));
 
-      // Use original fast axios upload approach
-      const formData = new FormData();
-      formData.append('pdf', file);
-      
-      // Simulate progress for better UX (since original was very fast)
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return Math.min(90, prev + Math.floor(Math.random() * 15) + 5);
-        });
-      }, 100);
-
-      const result = await axios.post('http://localhost:5002/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      // Use the API service for upload
+      const result = await uploadPDF(file, (progress) => {
+        setUploadProgress(progress);
       });
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-      
       setUploadStatus('success');
-      console.log('PDF uploaded successfully:', result.data);
+      setFileId(result.fileId);
+      console.log('PDF uploaded successfully:', result);
       
-      return result.data;
+      return result;
     } catch (error) {
       console.error('Error uploading file:', error);
       
@@ -108,6 +91,7 @@ export const usePDFUpload = () => {
     }
     setPdfFile(null);
     setPdfUrl(null);
+    setFileId(null);
     setUploadStatus('idle');
     setUploadError(null);
     if (fileInputRef.current) {
@@ -123,6 +107,7 @@ export const usePDFUpload = () => {
     // State
     pdfFile,
     pdfUrl,
+    fileId,
     uploadStatus,
     uploadError,
     uploadProgress,

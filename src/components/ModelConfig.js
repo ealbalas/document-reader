@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ModelConfig.css';
+import { getModelConfig, updateModelConfig } from '../services/api';
 
 const ModelConfig = ({ isOpen, onClose }) => {
   const [config, setConfig] = useState({
@@ -19,8 +20,7 @@ const ModelConfig = ({ isOpen, onClose }) => {
   const fetchConfig = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5002/api/models/config');
-      const data = await response.json();
+      const data = await getModelConfig();
       setConfig(data);
     } catch (error) {
       console.error('Error fetching config:', error);
@@ -33,23 +33,13 @@ const ModelConfig = ({ isOpen, onClose }) => {
   const updateConfig = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5002/api/models/config', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          llm: config.llm,
-          embedding: config.embedding
-        }),
+      await updateModelConfig({
+        llm: config.llm,
+        embedding: config.embedding
       });
       
-      if (response.ok) {
-        setMessage('Configuration updated successfully!');
-        setTimeout(() => setMessage(''), 3000);
-      } else {
-        setMessage('Error updating configuration');
-      }
+      setMessage('Configuration updated successfully!');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error updating config:', error);
       setMessage('Error updating configuration');
