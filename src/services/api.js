@@ -4,8 +4,8 @@
  */
 import axios from 'axios';
 
-// Hardcode the worker URL to ensure it works
-const API_BASE_URL = 'https://pdf-reader-backend.emadalbalas.workers.dev';
+// Use Render backend for production, fallback to local for development
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://document-reader-36gp.onrender.com';
 
 // Debug logging
 console.log('Using API URL:', API_BASE_URL);

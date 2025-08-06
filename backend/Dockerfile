@@ -21,6 +21,9 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install gunicorn for production deployment
+RUN pip install gunicorn
+
 # Copy application code
 COPY . .
 
@@ -35,5 +38,5 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 ENV PORT=5002
 
-# Run the application
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=5002"]
+# Run the application with gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "2", "--timeout", "120", "app:app"]
