@@ -1,0 +1,42 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install gunicorn for production deployment
+RUN pip install gunicorn
+
+# Copy application code
+COPY . .
+
+# Create uploads directory
+RUN mkdir -p /tmp/uploads
+
+# Expose port
+EXPOSE 5002
+
+# Set environment variables
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
+ENV PORT=5002
+
+# Run the application with gunicorn optimized for Render free tier
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "--workers", "1", "--timeout", "300", "--worker-class", "sync", "--max-requests", "100", "--max-requests-jitter", "10", "--preload", "app:app"]

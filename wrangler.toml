@@ -1,0 +1,8 @@
+name = "pdf-reader-frontend"
+compatibility_date = "2024-01-01"
+
+# Pages configuration for frontend deployment
+pages_build_output_dir = "build"
+
+[env.production.vars]
+REACT_APP_API_URL = "https://strengthening-doc-handheld-might.trycloudflare.com"

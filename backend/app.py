@@ -25,7 +25,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Configuration
+# Configuration - Increased file size limit for larger PDFs
 app.config['MAX_CONTENT_LENGTH'] = 150 * 1024 * 1024  # 150MB max file size
 UPLOAD_FOLDER = tempfile.mkdtemp()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -43,13 +43,13 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 openai_client = None
 if OPENAI_API_KEY:
     try:
-        openai_client = OpenAI()
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
         print("OpenAI API configured successfully")
     except Exception as e:
         print(f"Warning: Failed to initialize OpenAI client: {str(e)}")
         print(f"Error details: {type(e).__name__}: {str(e)}")
 else:
-    print("Warning: OPEN_AI_API not found in environment variables")
+    print("Warning: OPENAI_API_KEY not found in environment variables")
 
 # Global variables to store current document
 current_pdf_path = None
@@ -98,40 +98,49 @@ def initialize_embedding_system(document_domain: str = 'general'):
     """Initialize the embedding model and vector database with configurable model"""
     global embedding_model, chroma_client, collection
     
+    print("   🧠 initialize_embedding_system() - Starting embedding system setup...")
+    
     try:
         # Get embedding configuration
+        print("      📋 Loading embedding configuration...")
         embedding_config = model_config.get_embedding_config()
         provider = embedding_config["provider"]
         model_name = embedding_config["model"]
         
-        print(f"Initializing embedding system with {provider} provider, model: {model_name}")
+        print(f"      🔧 Configuration: {provider} provider, model: {model_name}")
         
         # Choose embedding model based on document domain if using sentence-transformers
         if provider == "sentence-transformers":
+            print(f"      📥 Loading sentence-transformers model: {model_name}...")
             # Initialize sentence transformer model
             embedding_model = SentenceTransformer(model_name)
+            print(f"      ✅ Sentence-transformers model loaded successfully")
         elif provider == "openai":
             # For OpenAI embeddings, we'll handle this in a separate function
-            print(f"OpenAI embeddings configured with model: {model_name}")
+            print(f"      🔑 OpenAI embeddings configured with model: {model_name}")
             embedding_model = "openai"  # Placeholder
         else:
-            print(f"Unsupported embedding provider: {provider}")
+            print(f"      ❌ Unsupported embedding provider: {provider}")
             return False
         
         # Initialize ChromaDB
+        print("      🗄️ Initializing ChromaDB vector database...")
         chroma_client = chromadb.Client()
         
         # Create or get collection with domain-specific name
         collection_name = f"pdf_documents_{document_domain}"
+        print(f"      📚 Setting up collection: {collection_name}")
         try:
             collection = chroma_client.get_collection(collection_name)
+            print(f"      ♻️ Using existing collection: {collection_name}")
         except:
             collection = chroma_client.create_collection(collection_name)
+            print(f"      🆕 Created new collection: {collection_name}")
         
-        print(f"Embedding system initialized successfully for {document_domain} domain")
+        print(f"      ✅ Embedding system initialized successfully for {document_domain} domain")
         return True
     except Exception as e:
-        print(f"Failed to initialize embedding system: {str(e)}")
+        print(f"      ❌ Failed to initialize embedding system: {str(e)}")
         return False
 
 def chunk_text(text: str, chunk_size: int = 300, overlap: int = 75) -> List[str]:
@@ -335,8 +344,7 @@ def answer_question_with_openai(question: str, context_text: str, page_sources: 
         # Get LLM configuration
         llm_config = model_config.get_llm_config()
         
-        if llm_config["provider"] != "openai":
-            raise Exception(f"Expected OpenAI provider, got {llm_config['provider']}")
+        # Note: We don't need to validate provider here since this function is called when OpenAI is needed
         
         # Use configured model
         model = llm_config["model"]
@@ -411,8 +419,7 @@ def answer_question_with_gemini(question: str, context_text: str, page_sources: 
         # Get LLM configuration
         llm_config = model_config.get_llm_config()
         
-        if llm_config["provider"] != "gemini":
-            raise Exception(f"Expected Gemini provider, got {llm_config['provider']}")
+        # Note: We don't need to validate provider here since this function is called when Gemini is needed
         
         # Use configured model
         model_name = llm_config["model"]
@@ -529,19 +536,25 @@ def answer_question_with_embeddings(question: str, pages_data: List[Dict]) -> Tu
 
 def extract_text_from_pdf(pdf_path):
     """Enhanced text extraction from PDF with multiple methods and better OCR fallback"""
+    print("   📖 extract_text_from_pdf() - Opening PDF document...")
     doc = fitz.open(pdf_path)
     pages_data = []
+    total_pages = len(doc)
+    print(f"   📄 Document has {total_pages} pages")
     
-    for page_num in range(len(doc)):
+    for page_num in range(total_pages):
+        print(f"   📃 Processing page {page_num + 1}/{total_pages}...")
         page = doc.load_page(page_num)
         page_rect = page.rect
         
         # Extract text with structure
+        print(f"      🔍 Extracting structured text from page {page_num + 1}...")
         text_dict = page.get_text("dict")
         page_text = ""
         text_blocks = []
         
         # Extract text blocks
+        block_count = 0
         for block in text_dict["blocks"]:
             if "lines" in block:
                 for line in block["lines"]:
@@ -573,11 +586,16 @@ def extract_text_from_pdf(pdf_path):
                             "extraction_method": "embedded"
                         })
                         page_text += clean_text + " "
+                        block_count += 1
+        
+        print(f"      ✅ Extracted {block_count} text blocks from page {page_num + 1}")
         
         # Fallback to simple text extraction if needed
         if len(page_text.strip()) < 50:
+            print(f"      ⚠️ Low text content ({len(page_text.strip())} chars), trying simple extraction...")
             simple_text = page.get_text()
             if len(simple_text.strip()) > len(page_text.strip()):
+                print(f"      🔄 Simple extraction yielded more text ({len(simple_text.strip())} chars)")
                 page_text = simple_text
                 # Create simple text blocks
                 lines = simple_text.split('\n')
@@ -598,6 +616,7 @@ def extract_text_from_pdf(pdf_path):
                             "extraction_method": "simple"
                         })
                         y_offset += line_height
+                print(f"      ✅ Created {len(text_blocks)} simple text blocks")
         
         pages_data.append({
             "page_num": page_num + 1,
@@ -605,8 +624,11 @@ def extract_text_from_pdf(pdf_path):
             "text_blocks": text_blocks,
             "extraction_methods": ["embedded", "simple"]
         })
+        
+        print(f"      📊 Page {page_num + 1} summary: {len(page_text.strip())} chars, {len(text_blocks)} blocks")
     
     doc.close()
+    print("   ✅ PDF document closed, text extraction complete")
     return pages_data
 
 def answer_question_simple(question, pages_data):
@@ -650,46 +672,141 @@ def answer_question_simple(question, pages_data):
 def upload_file():
     global current_pdf_path, current_pdf_text, current_pdf_pages
     
+    print("\n" + "="*60)
+    print("🚀 STARTING PDF UPLOAD PROCESS")
+    print("="*60)
+    
     if 'pdf' not in request.files:
+        print("❌ ERROR: No file provided in request")
         return jsonify({'error': 'No file provided'}), 400
     
     file = request.files['pdf']
     if file.filename == '':
+        print("❌ ERROR: No file selected")
         return jsonify({'error': 'No file selected'}), 400
+    
+    print(f"📁 STEP 1: File validation - Filename: {file.filename}")
+    
+    # Check file size before processing
+    print("📏 STEP 2: Checking file size...")
+    file.seek(0, 2)  # Seek to end
+    file_size = file.tell()
+    file.seek(0)  # Reset to beginning
+    print(f"   File size: {file_size / (1024*1024):.1f}MB")
+    
+    if file_size > app.config['MAX_CONTENT_LENGTH']:
+        print(f"❌ ERROR: File too large ({file_size / (1024*1024):.1f}MB > {app.config['MAX_CONTENT_LENGTH'] // (1024*1024)}MB)")
+        return jsonify({'error': f'File too large. Maximum size is {app.config["MAX_CONTENT_LENGTH"] // (1024*1024)}MB'}), 413
     
     if file and file.filename.lower().endswith('.pdf'):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+        print(f"✅ File validation passed - Secure filename: {filename}")
         
         try:
-            # Extract text and structure from PDF
-            current_pdf_pages = extract_text_from_pdf(filepath)
-            current_pdf_path = filepath
-            current_pdf_text = " ".join([page["text"] for page in current_pdf_pages])
+            # Save file
+            print("💾 STEP 3: Saving file to temporary location...")
+            file.save(filepath)
+            print(f"   Saved to: {filepath}")
+            print(f"   Processing PDF: {filename} ({file_size / (1024*1024):.1f}MB)")
+            
+            # Extract text and structure from PDF with error handling
+            try:
+                print("📖 STEP 4: Starting PDF text extraction...")
+                print("   Calling extract_text_from_pdf() function...")
+                current_pdf_pages = extract_text_from_pdf(filepath)
+                
+                if not current_pdf_pages:
+                    print("❌ ERROR: No pages could be extracted from PDF")
+                    raise Exception("No pages could be extracted from PDF")
+                    
+                current_pdf_path = filepath
+                current_pdf_text = " ".join([page["text"] for page in current_pdf_pages])
+                
+                print(f"✅ Text extraction completed successfully")
+                print(f"   Extracted text from {len(current_pdf_pages)} pages")
+                print(f"   Total text length: {len(current_pdf_text)} characters")
+                
+            except Exception as pdf_error:
+                print(f"❌ ERROR in PDF text extraction: {str(pdf_error)}")
+                # Clean up file on PDF processing error
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                    print("🗑️ Cleaned up temporary file due to extraction error")
+                raise Exception(f"PDF processing failed: {str(pdf_error)}")
             
             # Detect document domain for optimal embedding model selection
-            text_sample = current_pdf_text[:2000]
+            print("🔍 STEP 5: Analyzing document domain...")
+            text_sample = current_pdf_text[:2000] if current_pdf_text else ""
             document_domain = detect_document_domain(text_sample)
-            print(f"Detected document domain: {document_domain}")
+            print(f"   Detected document domain: {document_domain}")
             
-            # Initialize embedding system with domain-specific model
-            if not embedding_model:
-                initialize_embedding_system(document_domain)
+            # Initialize embedding system with domain-specific model (optional, don't fail if it doesn't work)
+            print("🧠 STEP 6: Setting up embedding system...")
+            embeddings_created = False
+            try:
+                if not embedding_model:
+                    print("   Initializing embedding system...")
+                    initialize_embedding_system(document_domain)
+                    print("   Embedding system initialized")
+                else:
+                    print("   Embedding system already initialized")
+                
+                # Create embeddings for the document
+                if embedding_model:
+                    print("   Creating embeddings for document...")
+                    embeddings_created = create_embeddings_for_document(current_pdf_pages)
+                    print(f"   Embeddings creation result: {embeddings_created}")
+                else:
+                    print("   No embedding model available, skipping embeddings")
+                    
+            except Exception as embedding_error:
+                print(f"⚠️ WARNING: Embedding creation failed: {str(embedding_error)}")
+                print("   Continuing without embeddings (basic search will still work)")
+                # Don't fail the upload if embeddings fail
             
-            # Create embeddings for the document
-            embeddings_created = create_embeddings_for_document(current_pdf_pages)
+            print("✅ STEP 7: Upload process completed successfully!")
+            print("="*60)
+            print("📊 FINAL RESULTS:")
+            print(f"   Pages processed: {len(current_pdf_pages)}")
+            print(f"   Embeddings created: {embeddings_created}")
+            print(f"   Document domain: {document_domain}")
+            print(f"   File size: {round(file_size / (1024*1024), 1)}MB")
+            print("="*60 + "\n")
             
             return jsonify({
                 'message': 'File uploaded successfully',
                 'pages': len(current_pdf_pages),
                 'embeddings_created': embeddings_created,
-                'document_domain': document_domain
+                'document_domain': document_domain,
+                'file_size_mb': round(file_size / (1024*1024), 1)
             })
+            
         except Exception as e:
-            return jsonify({'error': f'Error processing PDF: {str(e)}'}), 500
+            print(f"❌ CRITICAL ERROR in upload process: {str(e)}")
+            # Clean up file on any error
+            if os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                    print("🗑️ Cleaned up temporary file due to critical error")
+                except:
+                    print("⚠️ Failed to clean up temporary file")
+            
+            error_msg = str(e)
+            print(f"Upload error: {error_msg}")
+            print("="*60 + "\n")
+            
+            # Return more specific error messages
+            if "memory" in error_msg.lower() or "out of memory" in error_msg.lower():
+                return jsonify({'error': 'PDF too complex for processing. Try a smaller or simpler PDF.'}), 507
+            elif "timeout" in error_msg.lower():
+                return jsonify({'error': 'PDF processing timed out. Try a smaller PDF.'}), 408
+            else:
+                return jsonify({'error': f'Error processing PDF: {error_msg}'}), 500
     
-    return jsonify({'error': 'Invalid file type'}), 400
+    print("❌ ERROR: Invalid file type (not a PDF)")
+    print("="*60 + "\n")
+    return jsonify({'error': 'Invalid file type. Please upload a PDF file.'}), 400
 
 @app.route('/ask', methods=['POST'])
 def ask_question():
@@ -874,7 +991,9 @@ def update_model_config():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({'status': 'healthy'})
+    return jsonify({'status': 'healthy', 'timestamp': time.time()})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    port = int(os.environ.get('PORT', 5002))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug, host='0.0.0.0', port=port)
