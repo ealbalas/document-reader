@@ -13,6 +13,7 @@ function App() {
   const {
     pdfFile,
     pdfUrl,
+    fileId,
     uploadStatus,
     uploadError,
     uploadProgress,
@@ -240,15 +241,7 @@ function App() {
 
         {/* Action Buttons */}
         <div className="upload-actions">
-          {pdfFile && isUploaded && (
-            <button 
-              className="view-text-btn"
-              onClick={() => setShowExtractedText(true)}
-            >
-              <span className="btn-icon">📖</span>
-              View Extracted Text
-            </button>
-          )}
+          {/* View Extracted Text button disabled/removed */}
         </div>
       </div>
 

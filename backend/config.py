@@ -68,20 +68,8 @@ AVAILABLE_MODELS = {
         ],
         "gemini": [
             "gemini-1.5-flash",
-            "gemini-1.5-pro",
-            "gemini-pro"
-        ],
-        "anthropic": [
-            "claude-3-opus-20240229",
-            "claude-3-sonnet-20240229",
-            "claude-3-haiku-20240307"
-        ],
-        "ollama": [
-            "llama2",
-            "llama2:13b",
-            "llama2:70b",
-            "mistral",
-            "codellama"
+            "gemini-2.5-flash",
+            "gemini-2.5-pro"
         ]
     },
     "embedding": {
@@ -95,11 +83,6 @@ AVAILABLE_MODELS = {
             "all-mpnet-base-v2",
             "multi-qa-MiniLM-L6-cos-v1",
             "all-distilroberta-v1"
-        ],
-        "huggingface": [
-            "sentence-transformers/all-MiniLM-L6-v2",
-            "sentence-transformers/all-mpnet-base-v2",
-            "sentence-transformers/multi-qa-MiniLM-L6-cos-v1"
         ]
     }
 }

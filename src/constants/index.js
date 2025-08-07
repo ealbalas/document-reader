@@ -124,17 +124,14 @@ export const STORAGE_KEYS = {
 export const MODEL_PROVIDERS = {
   OPENAI: 'openai',
   GEMINI: 'gemini',
-  ANTHROPIC: 'anthropic',
-  OLLAMA: 'ollama',
   SENTENCE_TRANSFORMERS: 'sentence-transformers',
-  HUGGINGFACE: 'huggingface',
 };
 
 // Default Model Configuration
 export const DEFAULT_MODEL_CONFIG = {
   llm: {
     provider: MODEL_PROVIDERS.OPENAI,
-    model: 'gpt-4o',
+    model: 'gpt-4o', // For Gemini, use 'gemini-1.5-flash', 'gemini-1.5-pro', or 'gemini-pro'
     temperature: 0.1,
     max_tokens: 1000,
   },

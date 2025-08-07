@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getExtractedText } from '../services/api';
 import './ExtractedTextViewer.css';
 
-const ExtractedTextViewer = ({ isVisible, onClose }) => {
+const ExtractedTextViewer = ({ isVisible, onClose, fileId }) => {
   const [extractedData, setExtractedData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,15 +16,20 @@ const ExtractedTextViewer = ({ isVisible, onClose }) => {
   }, [isVisible]);
 
   const fetchExtractedText = async () => {
+    if (!fileId) {
+      setError('No file ID provided');
+      return;
+    }
+
     setLoading(true);
     setError('');
     
     try {
-      const response = await axios.get('http://localhost:5002/extracted-text');
-      setExtractedData(response.data);
+      const data = await getExtractedText(fileId);
+      setExtractedData(data);
       setSelectedPage(1);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch extracted text');
+      setError(err.response?.data?.error || err.message || 'Failed to fetch extracted text');
     } finally {
       setLoading(false);
     }
@@ -123,6 +128,7 @@ const ExtractedTextViewer = ({ isVisible, onClose }) => {
       </div>
     </div>
   );
-};
 
+  return null; // Disable the View Extracted Text button by returning null
+}
 export default ExtractedTextViewer;
