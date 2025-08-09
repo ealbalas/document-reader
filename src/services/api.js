@@ -5,7 +5,7 @@
 import axios from 'axios';
 
 // Use Fly.io backend for production, fallback to local for development
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://pdf-reader-backend.fly.dev';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://painted-generates-francis-video.trycloudflare.com';
 
 // Debug logging
 console.log('Using API URL:', API_BASE_URL);
