@@ -5,7 +5,7 @@
 import axios from 'axios';
 
 // Use Fly.io backend for production, fallback to local for development
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://painted-generates-francis-video.trycloudflare.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://192.168.68.60:5002";
 
 // Debug logging
 console.log('Using API URL:', API_BASE_URL);
