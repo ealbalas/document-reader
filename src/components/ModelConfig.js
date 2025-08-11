@@ -45,6 +45,7 @@ const ModelConfig = ({ isOpen, onClose }) => {
       setMessage('Error updating configuration');
     } finally {
       setLoading(false);
+      onClose()
     }
   };
 
@@ -180,7 +181,9 @@ const ModelConfig = ({ isOpen, onClose }) => {
         
         <div className="model-config-footer">
           <button className="cancel-button" onClick={onClose}>Cancel</button>
-          <button className="save-button" onClick={updateConfig} disabled={loading}>
+          <button className="save-button" onClick={async () => {
+            await updateConfig();
+          }} disabled={loading}>
             {loading ? 'Saving...' : 'Save Configuration'}
           </button>
         </div>
